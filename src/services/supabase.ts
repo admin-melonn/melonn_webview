@@ -4,12 +4,8 @@ import snakeCase from 'lodash.snakecase'
 import { isObject } from '../utils/typeCheck'
 import { PostgrestError, createClient } from '@supabase/supabase-js'
 
-const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL
-  ? process.env.REACT_APP_SUPABASE_URL
-  : ''
-const PUBLIC_ANON_KEY = process.env.REACT_APP_PUBLIC_ANON_KEY
-  ? process.env.REACT_APP_PUBLIC_ANON_KEY
-  : ''
+const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL as string
+const PUBLIC_ANON_KEY = process.env.REACT_APP_PUBLIC_ANON_KEY as string
 
 export const sb = createClient(SUPABASE_URL, PUBLIC_ANON_KEY)
 
