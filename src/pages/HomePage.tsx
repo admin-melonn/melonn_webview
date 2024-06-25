@@ -1,11 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import Header from '../components/organisms/Header'
-import BottomBar from '../components/organisms/BottomBar'
-import { useUserStore } from '../store/useUserStore'
 import { PostService } from '../services/post-service'
 import MainPostList from '../components/templates/MainPostList'
-import { PostDisplayType, PostType } from '../services/post-service/types'
-import { useInfiniteQuery, useQuery } from 'react-query'
+import { useQuery } from 'react-query'
 import { useSession } from '../hooks/auth'
 
 const HomePage = () => {
