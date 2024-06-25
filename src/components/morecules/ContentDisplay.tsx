@@ -1,6 +1,6 @@
 import { PostDisplayType } from '@/src/services/post-service/types'
 import { timeAgo } from '../../utils/formatDate'
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import {
   CommentDisplayType,
   CommentType,
@@ -33,7 +33,7 @@ const ContentDisplay = ({ content, isLine, isMain = false }: ContentProps) => {
         </div>
         <div className='w-[90%] pl-2 pb-3'>
           <ContentNameBar content={content} />
-          <div className='pb-4 pt-1'>{content.content}</div>
+          <div className='pb-3 pt-1'>{content.content}</div>
           <ContentBottomBar content={content} />
         </div>
       </div>
@@ -59,7 +59,7 @@ const ContentDisplay = ({ content, isLine, isMain = false }: ContentProps) => {
             <ContentNameBar content={content} />
           </div>
         </div>
-        <div className='pb-2 pt-2'>{content.content}</div>
+        <div className='pb-4 pt-4'>{content.content}</div>
         <ContentBottomBar content={content} />
       </div>
     )

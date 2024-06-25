@@ -1,35 +1,46 @@
-import React, { useEffect, useState } from 'react'
-import Header from '../components/organisms/Header'
-import BottomBar from '../components/organisms/BottomBar'
-import { useUserStore } from '../store/useUserStore'
+import React, { useCallback, useEffect, useState } from 'react'
 import { PostService } from '../services/post-service'
 import MainPostList from '../components/templates/MainPostList'
-import { PostDisplayType, PostType } from '../services/post-service/types'
+import { useQuery } from 'react-query'
+import { useSession } from '../hooks/auth'
 
 const HomePage = () => {
-  const { userId } = useUserStore()
-  const [posts, setPosts] = useState<PostDisplayType[]>([])
+  // const [posts, setPosts] = useState<PostDisplayType[]>([])
+  const { session } = useSession()
 
-  const getPostings = async () => {
-    if (userId) {
-      const res = await PostService.GetPosts('userId', userId)
-      console.log('불러온거 보기 : ', res)
-      if (res.length > 0) {
-        setPosts(res)
-      }
+  const fetchPostings = useCallback(async () => {
+    if (session) {
+      const res = await PostService.GetPosts('userId', session.user.id)
+      return res
     }
-  }
+  }, [session])
 
-  useEffect(() => {
-    getPostings()
-  }, [userId])
+  const {
+    data: posts,
+    isError,
+    isLoading,
+    error,
+  } = useQuery('posts', fetchPostings)
+
+  // const getPostings = async () => {
+  //   if (userId) {
+  //     const res = await PostService.GetPosts('userId', userId)
+  //     if (res.length > 0) {
+  //       setPosts(res)
+  //     }
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   getPostings()
+  // }, [userId])
 
   return (
     <div>
       <div className='justify-center content-center text-center h-[48px]'>
         <p className='font-semibold text-lg'>Melonn</p>
       </div>
-      <MainPostList posts={posts} />
+      {!isLoading && <MainPostList posts={posts} />}
     </div>
   )
 }

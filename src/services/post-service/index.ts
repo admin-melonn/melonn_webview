@@ -32,11 +32,12 @@ export class PostService {
           likes_count,
           user_id,
           user (user_id, name, profile_image_url),
-          comments:comment (post_id, comment_id, created_at, content, likes_count, user_id, user (user_id, name, profile_image_url))
+          comments:comment (post_id, comment_id, created_at, content, likes_count, parent_comment_id, user_id, user (user_id, name, profile_image_url))
           `
       )
       .order('created_at', { ascending: false })
       .eq(snakeCase(column), value)
+      .filter('comments.parent_comment_id', 'is', null)
       .limit(10)
 
     return returnSupabase(data, error)
@@ -57,7 +58,7 @@ export class PostService {
           likes_count,
           user_id,
           user (user_id, name, profile_image_url),
-          comments:comment (post_id, comment_id, created_at, content, likes_count, user_id, user (user_id, name, profile_image_url))
+          comments:comment (post_id, comment_id, created_at, content, likes_count, user_id, parent_comment_id, user (user_id, name, profile_image_url))
           `
       )
       .order('created_at', { ascending: false })

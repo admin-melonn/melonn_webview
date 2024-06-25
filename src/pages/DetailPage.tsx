@@ -6,6 +6,8 @@ import ContentDisplay from '../components/morecules/ContentDisplay'
 import { useUserStore } from '../store/useUserStore'
 import CommentDisplay from '../components/organisms/CommentDisplay'
 import { useReplyStore } from '../store/useReplyStore'
+import { CommentDisplayType } from '../services/comment-service/types'
+import CustomAlert from '../components/organisms/CustomAlert'
 
 const DetailPage = () => {
   const { id = '' } = useParams()
@@ -14,12 +16,55 @@ const DetailPage = () => {
   const [content, setContent] = useState<PostDisplayType | null>(null)
   const { setParent } = useReplyStore()
 
+  const returnNestedComments = (
+    replies: CommentDisplayType[],
+    parentCommentId: string
+  ) => {
+    const comment = replies.find(
+      (reply) => reply.parentCommentId == parentCommentId
+    )
+
+    if (comment) {
+      const findNested = returnNestedComments(replies, comment.commentId)
+      if (findNested) {
+        comment.comments = findNested
+      }
+      return [comment]
+    } else {
+      return false
+    }
+  }
+
   const getPost = async () => {
     const res = await PostService.GetPost('postId', id)
-    console.log('결고 ㅏ : ', res)
 
     if (res && res.length > 0) {
-      setContent(res[0])
+      let totalComments: CommentDisplayType[] = []
+      if (res[0].comments) {
+        let replies = res[0].comments.filter((doc) => doc.parentCommentId)
+        if (replies && replies.length > 0) {
+          res[0].comments
+            .filter((doc) => !doc.parentCommentId)
+            .forEach((doc) => {
+              const findNested = returnNestedComments(replies, doc.commentId)
+              if (findNested) {
+                const temporal = {
+                  ...doc,
+                  comments: findNested as CommentDisplayType[],
+                }
+                totalComments.push(temporal)
+              } else {
+                totalComments.push(doc)
+              }
+            })
+        } else {
+          totalComments = res[0].comments
+        }
+      }
+      setContent({
+        ...res[0],
+        comments: totalComments,
+      })
     }
   }
 
@@ -27,8 +72,48 @@ const DetailPage = () => {
     getPost()
   }, [id])
 
+  const reply = (comment: CommentDisplayType) => {
+    const conversation = [
+      {
+        commenterType: 'user',
+        content: content?.content,
+      },
+    ]
+    let cmts = [comment]
+    let c = 0
+    while (cmts && c < 10) {
+      let cmt = cmts.pop()
+      if (!cmt) {
+        break
+      }
+
+      if (cmt.comments) {
+        cmts.push(cmt.comments[0])
+      }
+      conversation.push({
+        commenterType: cmt.createdBy,
+        content: cmt.content,
+      })
+      c += 1
+      console.log('찾기')
+    }
+    console.log('대화 : ', conversation)
+
+    setParent({
+      profileUrl: comment.user ? comment.user.profileImageUrl : '',
+      name: comment.user ? comment.user.name : '',
+      content: comment.content,
+      createdAt: comment.createdAt,
+      postId: comment.postId,
+      userId: comment.userId,
+    })
+    navigate(`/write/${comment?.commentId}`)
+  }
+  const [alertOpen, setAlertOpen] = React.useState(false)
+
   return (
     <div>
+      <CustomAlert open={alertOpen} setOpen={setAlertOpen} onClick={() => {}} />
       {content && (
         <>
           <div className='grid gap-2 grid-flex-row grid-cols-6 border border-b-gray-100 w-full p-3 h-[50px] justify-between content-center'>
@@ -51,33 +136,30 @@ const DetailPage = () => {
           <div className='pt-2'>
             {<ContentDisplay content={content} isLine={false} isMain={true} />}
           </div>
-          <div className='px-4 py-2 mt-4 mb-3 border-y border-gray-100'>
+          <div className='px-4 py-2 mt-4 mb-1 border-y border-gray-200'>
             <div className='font-semibold text-[14px]'>Comments</div>
           </div>
           <div>
             {content.comments && (
               <>
-                {content.comments.map((comment, index) => {
+                {content.comments.map((comment) => {
                   return (
-                    <div key={comment.commentId}>
+                    <div
+                      key={comment.commentId}
+                      className='border-b border-gray-200 pt-2 pb-1'
+                    >
                       <CommentDisplay
                         comment={comment}
-                        isLine={index + 1 != content.comments?.length}
+                        isLine={
+                          comment.comments && comment.comments.length > 0
+                            ? true
+                            : false
+                        }
                       />
                       <div
                         className='pl-12 pb-2 text-gray-400'
                         onClick={() => {
-                          setParent({
-                            profileUrl: comment.user
-                              ? comment.user.profileImageUrl
-                              : '',
-                            name: comment.user ? comment.user.name : '',
-                            content: comment.content,
-                            createdAt: comment.createdAt,
-                            postId: comment.postId,
-                            userId: comment.userId,
-                          })
-                          navigate(`/write/${comment?.commentId}`)
+                          reply(comment)
                         }}
                       >
                         Reply
@@ -88,9 +170,9 @@ const DetailPage = () => {
               </>
             )}
           </div>
-          <div className='fixed w-full p-3 bg-white border-t bottom-0'>
+          <div className='fixed w-full p-3 bg-white/70 border-t bottom-0 backdrop-blur-sm'>
             <div
-              className='bg-gray-100/90 p-[6px] rounded-full flex flex-row content-center'
+              className='bg-gray-200/50 p-[6px] rounded-full flex flex-row content-center'
               onClick={() => {
                 setParent({
                   profileUrl: content.user.profileImageUrl,
@@ -112,6 +194,10 @@ const DetailPage = () => {
               </p>
             </div>
           </div>
+          <br />
+          <br />
+          <br />
+          <br />
         </>
       )}
     </div>

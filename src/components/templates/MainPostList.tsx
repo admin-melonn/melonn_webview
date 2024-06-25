@@ -3,10 +3,12 @@ import React from 'react'
 import PostDisplay from '../organisms/PostDisplay'
 
 type MainPostListProps = {
-  posts: PostDisplayType[] | null
+  posts: PostDisplayType[] | undefined
 }
 
 const MainPostList = ({ posts }: MainPostListProps) => {
+  console.log('다시 그린다 체크', posts)
+
   return (
     <div>
       {posts?.map((post) => {
