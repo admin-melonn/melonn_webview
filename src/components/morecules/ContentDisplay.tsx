@@ -17,7 +17,7 @@ type ContentProps = {
 const ContentDisplay = ({ content, isLine, isMain = false }: ContentProps) => {
   if (!isMain) {
     return (
-      <div className='flex flex-row px-3 pt-1'>
+      <div className='flex flex-row px-3 pt-1 text-[15px]'>
         <div className='flex flex-col justify-start items-center w-[12%] pt-1 max-w-[30px]'>
           <img
             src={
@@ -33,14 +33,14 @@ const ContentDisplay = ({ content, isLine, isMain = false }: ContentProps) => {
         </div>
         <div className='w-[90%] pl-2 pb-3'>
           <ContentNameBar content={content} />
-          <div className='pb-3 pt-1'>{content.content}</div>
+          <div className='pb-2 pt-1'>{content.content}</div>
           <ContentBottomBar content={content} />
         </div>
       </div>
     )
   } else {
     return (
-      <div className='px-4 pt-1'>
+      <div className='px-4 pt-0 text-[15px]'>
         <div className='flex flex-row items-center content-center'>
           <div className='flex flex-col justify-start items-center w-[12%] pt-1 max-w-[30px]'>
             <img
@@ -59,7 +59,7 @@ const ContentDisplay = ({ content, isLine, isMain = false }: ContentProps) => {
             <ContentNameBar content={content} />
           </div>
         </div>
-        <div className='pb-4 pt-4'>{content.content}</div>
+        <div className='pb-2 pt-2'>{content.content}</div>
         <ContentBottomBar content={content} />
       </div>
     )

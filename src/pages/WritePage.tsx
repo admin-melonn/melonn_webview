@@ -13,6 +13,7 @@ import { CommentQueryType } from '../services/comment-service/types'
 import { CommentService } from '../services/comment-service'
 import ParentContent from '../components/morecules/ParentContent'
 import { useReplyStore } from '../store/useReplyStore'
+import { Camera, Images } from 'lucide-react'
 
 const defaultPrompt1 =
   'You are a really good friend of mine in the sns. You are male and 27 years old. You are not that kind. But you are funny. Answer me like a comment in SNS. Return in Korean'
@@ -141,7 +142,7 @@ const WritePage = () => {
 
   return (
     <div className='relative h-full'>
-      <div className='grid gap-2 grid-flex-row grid-cols-8 border border-b-gray-100 w-full p-4 h-[50px] justify-center content-center'>
+      <div className='grid gap-2 grid-flex-row grid-cols-8 border border-b-gray-100 w-full px-4 py-2 h-[44px] justify-center content-center'>
         <div
           className='col-span-2 text-[14px] content-center'
           onClick={() => {
@@ -150,7 +151,7 @@ const WritePage = () => {
         >
           Cancel
         </div>
-        <div className='col-span-4 text-center font-semibold text-[18px] content-center'>
+        <div className='col-span-4 text-center font-semibold text-[16px] content-center'>
           {parentId && parent ? 'Reply' : 'New post'}
         </div>
         <div className='col-span-2 justify-end content-end flex'></div>
@@ -162,7 +163,7 @@ const WritePage = () => {
       )}
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className='p-2'>
-          <div className='flex flex-row'>
+          <div className='flex flex-row pt-2'>
             <div className='flex justify-end items-start p-0 pl-2'>
               <img
                 src={imgUrl ? imgUrl : '/svg/profile.svg'}
@@ -188,14 +189,14 @@ const WritePage = () => {
                       {...field}
                       autoFocus
                       placeholder='please write anything you want'
-                      className='w-full mt-2 focus:outline-none resize-none placeholder:text-gray-300'
+                      className='w-full mt-2 text-[16px] focus:outline-none resize-none placeholder:text-gray-300'
                       minRows={1}
                     />
                   )}
                 />
                 <div className='w-full flex flex-row mt-4'>
-                  <Icon src='/svg/gallery.svg' />
-                  <Icon src='/svg/camera.svg' className='ml-4' />
+                  <Images strokeWidth={1.5} />
+                  <Camera className='ml-4' strokeWidth={1.5} />
                 </div>
               </div>
               <Controller
@@ -210,7 +211,7 @@ const WritePage = () => {
                     autoFocus
                     placeholder='please write anything you want'
                     defaultValue={defaultPrompt1}
-                    className='w-full mt-12 text-[15px] border focus:outline-none resize-none placeholder:text-gray-300'
+                    className='w-full mt-12 text-[16px] border focus:outline-none resize-none placeholder:text-gray-300'
                     minRows={1}
                   />
                 )}
@@ -228,7 +229,7 @@ const WritePage = () => {
                     autoFocus
                     placeholder='please write anything you want'
                     defaultValue={defaultPrompt2}
-                    className='w-full mt-8 text-[15px] border focus:outline-none resize-none placeholder:text-gray-300'
+                    className='w-full mt-8 text-[16px] border focus:outline-none resize-none placeholder:text-gray-300'
                     minRows={1}
                   />
                 )}
@@ -237,11 +238,12 @@ const WritePage = () => {
             </div>
           </div>
         </div>
-        <div className='absolute w-full left-0 bottom-[0px] p-4 flex justify-between'>
+        <div className='fixed w-full left-0 bottom-[0px] py-2 px-4 flex justify-between'>
           <div></div>
           <button
             type='submit'
-            className='w-[80px] rounded-[120px] p-2 text-center bg-black text-white'
+            disabled={isSubmitting}
+            className='rounded-[120px] py-2 px-5 text-center bg-black text-white font-medium'
           >
             {isSubmitting ? 'Posting' : 'Post'}
           </button>
