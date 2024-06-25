@@ -116,7 +116,7 @@ const DetailPage = () => {
       <CustomAlert open={alertOpen} setOpen={setAlertOpen} onClick={() => {}} />
       {content && (
         <>
-          <div className='grid gap-2 grid-flex-row grid-cols-6 border border-b-gray-100 w-full p-3 h-[50px] justify-between content-center'>
+          <div className='grid gap-2 grid-flex-row grid-cols-6 border border-b-gray-100 w-full p-3 h-[44px] justify-between content-center'>
             <div
               className='col-span-1 text-[14px] flex flex-row content-center justify-start'
               onClick={() => {
@@ -124,11 +124,11 @@ const DetailPage = () => {
               }}
             >
               <img src='/svg/left.svg' className='w-5' />
-              <div className='content-center flex justify-center text-[17px]'>
+              <div className='content-center flex justify-center text-[16px]'>
                 Back
               </div>
             </div>
-            <div className='col-span-4 text-center font-semibold text-[18px] content-center'>
+            <div className='col-span-4 text-center font-semibold text-[17px] content-center'>
               Post
             </div>
             <div className='col-span-1 justify-end content-end flex'></div>
@@ -136,7 +136,7 @@ const DetailPage = () => {
           <div className='pt-2'>
             {<ContentDisplay content={content} isLine={false} isMain={true} />}
           </div>
-          <div className='px-4 py-2 mt-4 mb-1 border-y border-gray-200'>
+          <div className='px-4 py-2 mt-4 mb-0 border-y border-gray-200'>
             <div className='font-semibold text-[14px]'>Comments</div>
           </div>
           <div>
@@ -157,7 +157,7 @@ const DetailPage = () => {
                         }
                       />
                       <div
-                        className='pl-12 pb-2 text-gray-400'
+                        className='pl-12 pb-2 text-[15px] mt-[-8px] text-gray-400'
                         onClick={() => {
                           reply(comment)
                         }}

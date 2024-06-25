@@ -1,5 +1,5 @@
-import { PostDisplayType, PostType } from '@/src/services/post-service/types'
 import React from 'react'
+import { PostDisplayType, PostType } from '@/src/services/post-service/types'
 import PostDisplay from '../organisms/PostDisplay'
 
 type MainPostListProps = {
@@ -7,8 +7,6 @@ type MainPostListProps = {
 }
 
 const MainPostList = ({ posts }: MainPostListProps) => {
-  console.log('다시 그린다 체크', posts)
-
   return (
     <div>
       {posts?.map((post) => {

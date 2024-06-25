@@ -1,6 +1,6 @@
-import { PostDisplayType, PostType } from '@/src/services/post-service/types'
-import { timeAgo } from '../../utils/formatDate'
 import React, { useMemo } from 'react'
+import { timeAgo } from '../../utils/formatDate'
+import { PostDisplayType, PostType } from '@/src/services/post-service/types'
 import ContentDisplay from '../morecules/ContentDisplay'
 import CommentDisplay from './CommentDisplay'
 import { useNavigate } from 'react-router-dom'
