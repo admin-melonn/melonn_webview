@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useUserStore } from '../store/useUserStore'
 import TextareaAutosize from 'react-textarea-autosize'
 import Icon from '../components/atom/Icon'
@@ -14,6 +14,11 @@ import { CommentService } from '../services/comment-service'
 import ParentContent from '../components/morecules/ParentContent'
 import { useReplyStore } from '../store/useReplyStore'
 
+const defaultPrompt1 =
+  'You are a really good friend of mine in the sns. You are male and 27 years old. You are not that kind. But you are funny. Answer me like a comment in SNS. Return in Korean'
+const defaultPrompt2 =
+  'You are a really good friend of mine in the sns. You are male and 27 years old. You are not that kind. But you are funny. Answer me like a comment in SNS. Return in Korean '
+
 interface CreatePostDto {
   content: string
   prompt1: string
@@ -28,9 +33,50 @@ const WritePage = () => {
     handleSubmit,
     control,
     reset,
+    setValue,
     formState: { isSubmitting },
   } = useForm<CreatePostDto>()
   const { parent } = useReplyStore()
+
+  useEffect(() => {
+    setValue('prompt1', defaultPrompt1)
+    setValue('prompt2', defaultPrompt2)
+  }, [])
+
+  const postComment = async (dto: CreatePostDto) => {
+    if (parent) {
+      const recommentId = v4()
+      const commentBody: CommentQueryType = {
+        commentId: recommentId,
+        postId: parent.postId,
+        content: dto.content,
+        userId: userId,
+        parentCommentId: parentId,
+        createdBy: 'user',
+      }
+      const res = await CommentService.InsertComment(commentBody)
+
+      const returnText = await chatComplete(
+        dto.prompt2 ? dto.prompt2 : defaultPrompt2,
+        dto.content
+      )
+
+      if (returnText) {
+        const commentBody2: CommentQueryType = {
+          commentId: v4(),
+          postId: parent.postId,
+          content: returnText,
+          userId: parent.userId,
+          parentCommentId: recommentId,
+          createdBy: 'ai',
+        }
+        const res2 = await CommentService.InsertComment(commentBody2)
+        console.log('댓글에 답글', res2)
+      }
+
+      return
+    }
+  }
 
   const onSubmit = async (dto: CreatePostDto) => {
     console.log('보기 ', dto)
@@ -39,29 +85,8 @@ const WritePage = () => {
     }
 
     if (parentId && parent) {
-      const commentBody: CommentQueryType = {
-        commentId: v4(),
-        postId: parent.postId,
-        content: dto.content,
-        userId: userId,
-        createdBy: 'ai',
-      }
-      const res = await CommentService.InsertComment(commentBody)
-
-      const returnText = await chatComplete(dto.prompt2, dto.content)
-
-      if (returnText) {
-        const commentBody2: CommentQueryType = {
-          commentId: v4(),
-          postId: parent.postId,
-          content: returnText,
-          userId: parent.userId,
-          createdBy: 'ai',
-        }
-        const res2 = await CommentService.InsertComment(commentBody2)
-        console.log('댓글에 답글', res2)
-      }
-
+      postComment(dto)
+      navigate(-1)
       return
     }
 
@@ -76,7 +101,10 @@ const WritePage = () => {
     }
     const res = await PostService.InsertPost(body)
 
-    const returnText = await chatComplete(dto.prompt2, dto.content)
+    const returnText = await chatComplete(
+      dto.prompt1 ? dto.prompt1 : defaultPrompt1,
+      dto.content
+    )
 
     if (returnText) {
       const commentBody: CommentQueryType = {
@@ -108,6 +136,7 @@ const WritePage = () => {
         content: '',
       })
     }
+    navigate('/')
   }
 
   return (
@@ -180,7 +209,7 @@ const WritePage = () => {
                     {...field}
                     autoFocus
                     placeholder='please write anything you want'
-                    defaultValue='You are a really good friend of mine in the sns. You are male and 27 years old. You are not that kind. But you are funny. Answer me like a comment in SNS. Return in Korean'
+                    defaultValue={defaultPrompt1}
                     className='w-full mt-12 text-[15px] border focus:outline-none resize-none placeholder:text-gray-300'
                     minRows={1}
                   />
@@ -198,7 +227,7 @@ const WritePage = () => {
                     {...field}
                     autoFocus
                     placeholder='please write anything you want'
-                    defaultValue='You are a really good friend of mine in the sns. You are female and 27 years old. You are kind and funny. Answer me like a comment in SNS. Return in Korean'
+                    defaultValue={defaultPrompt2}
                     className='w-full mt-8 text-[15px] border focus:outline-none resize-none placeholder:text-gray-300'
                     minRows={1}
                   />

@@ -1,5 +1,6 @@
 import { CommentDisplayType } from '@/src/services/comment-service/types'
 import ContentDisplay from '../morecules/ContentDisplay'
+import React from 'react'
 
 type CommentDisplayProps = {
   comment: CommentDisplayType
@@ -10,8 +11,20 @@ const CommentDisplay = ({ comment, isLine }: CommentDisplayProps) => {
   return (
     <div>
       <ContentDisplay content={comment} isLine={isLine} />
+      {comment.comments?.map((reply) => {
+        return (
+          <div key={reply.commentId}>
+            <CommentDisplay
+              comment={reply}
+              isLine={
+                reply.comments && reply.comments.length > 0 ? true : false
+              }
+            />
+          </div>
+        )
+      })}
     </div>
   )
 }
 
-export default CommentDisplay
+export default React.memo(CommentDisplay)

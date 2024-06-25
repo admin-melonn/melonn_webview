@@ -12,7 +12,7 @@ export type CommentType = {
 }
 
 export type CommentDisplayType = CommentType & {
-  comments?: CommentType[]
+  comments?: CommentDisplayType[]
   user?: UserInformationType
 }
 

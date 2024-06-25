@@ -19,7 +19,6 @@ const SessionLayout = () => {
     } = await sb.auth.getSession()
     setSession(session)
 
-    console.log('세션 ', session)
     if (session) {
       setEmail(session.user.user_metadata.email)
       setImgUrl(session.user.user_metadata.avatar_url)

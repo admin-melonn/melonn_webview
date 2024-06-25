@@ -8,9 +8,9 @@ const SignInPage = () => {
   const login = async () => {
     const { data, error } = await sb.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: '/',
-      },
+      // options: {
+      //   redirectTo: '/',
+      // },
     })
   }
 
