@@ -11,6 +11,7 @@ import WritePage from './pages/WritePage'
 import OuterLayout from './components/templates/OuterLayout'
 import InnerLayout from './components/templates/InnerLayout'
 import DetailPage from './pages/DetailPage'
+import SessionLayout from './components/templates/SessionLayout'
 
 // AuthLayout: Auth 관리 템플릿
 // AppLayout: 실질적인 앱의 레이아웃을 담당하는 템플릿
@@ -21,28 +22,30 @@ export default function Router() {
 
   return (
     <Routes key={location.pathname} location={location}>
-      <Route element={<OuterLayout />}>
-        <Route path='/' element={<HomePage />} />
-      </Route>
-      <Route element={<InnerLayout />}>
-        <Route path='/signup' element={<SignInPage />} />
-      </Route>
-      <Route element={<InnerLayout />}>
-        <Route path='/write' element={<WritePage />} />
-        <Route path='/write/:parentId' element={<WritePage />} />
-      </Route>
-      <Route element={<InnerLayout />}>
-        <Route path='/post/:id' element={<DetailPage />} />
-      </Route>
-      <Route>
-        <Route path='/profile' element={<ProfilePage />} />
-      </Route>
-      {/* <Route element={<SessionLayout />}>
+      <Route element={<SessionLayout />}>
+        <Route element={<OuterLayout />}>
+          <Route path='/' element={<HomePage />} />
+        </Route>
+        <Route element={<InnerLayout />}>
+          <Route path='/signin' element={<SignInPage />} />
+        </Route>
+        <Route element={<InnerLayout />}>
+          <Route path='/write' element={<WritePage />} />
+          <Route path='/write/:parentId' element={<WritePage />} />
+        </Route>
+        <Route element={<InnerLayout />}>
+          <Route path='/post/:id' element={<DetailPage />} />
+        </Route>
+        <Route>
+          <Route path='/profile' element={<ProfilePage />} />
+        </Route>
+        {/* <Route element={<SessionLayout />}>
         <Route
           path="/snapshots/:snapshotId/edit"
           element={<SnapshotEditPage />}
         />
       </Route> */}
+      </Route>
     </Routes>
   )
 }

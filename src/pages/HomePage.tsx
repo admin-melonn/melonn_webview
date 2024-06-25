@@ -11,7 +11,6 @@ const HomePage = () => {
   const [posts, setPosts] = useState<PostDisplayType[]>([])
 
   const getPostings = async () => {
-    console.log('userId', userId)
     if (userId) {
       const res = await PostService.GetPosts('userId', userId)
       console.log('불러온거 보기 : ', res)
