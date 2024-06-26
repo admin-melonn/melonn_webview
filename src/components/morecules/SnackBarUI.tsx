@@ -14,6 +14,7 @@ let timeId: any
 const SnackbarUI = forwardRef((props, ref) => {
   const [show, setShow] = useState(false)
   const [text, setText] = useState<SnackBarTypes>(SnackBarTypes.POSTING)
+  const [func, setFunc] = useState<() => void | undefined>()
 
   const hideSnackbar = () => {
     setShow(false)
@@ -28,6 +29,9 @@ const SnackbarUI = forwardRef((props, ref) => {
 
       setTimeout(() => {
         setText(params.text)
+        if (params.onClick) {
+          setFunc(() => params.onClick)
+        }
         timeId = setTimeout(() => hideSnackbar(), 5000)
         setShow(true)
       }, 100)
@@ -42,7 +46,10 @@ const SnackbarUI = forwardRef((props, ref) => {
     >
       <div
         onClick={() => {
-          if (SnackBars[text].text == SnackBarTypes.POSTED) {
+          if (text == SnackBarTypes.POSTED && func) {
+            func()
+            setFunc(undefined)
+            Snackbar.hide()
           } else {
             Snackbar.hide()
           }

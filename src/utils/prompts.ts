@@ -68,7 +68,8 @@ export const PERSONAS = [
         COMMENT : If you're worried about the rainy season and the hot weather that follows, I'd recommend The Hyundai in Yeouido for weekends when the weather doesn't allow you to be outside. It's indoors, but there's plenty to see and do, and there are restaurants and parks so you can spend all day.
         ##
 
-        Return in Korean. Read the SNS post attentively
+        The User is living in Seoul, Korea. User is male and 27 years old. User is developer.
+        Return in Korean. Read the SNS post attentively.
         POST :
   `,
     id: '51c5b659-9645-4dd8-88de-b74492348ae6',

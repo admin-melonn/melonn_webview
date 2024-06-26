@@ -118,6 +118,7 @@ const WritePage = () => {
         ) {
           const commentIndex = returnText.toLowerCase().indexOf('comment')
           commentText = returnText
+            .toLowerCase()
             .substring(commentIndex + 'comment: '.length)
             .trim()
         }
@@ -133,7 +134,10 @@ const WritePage = () => {
 
         // 배열의 마지막 요소인지 확인
         if (index === PERSONAS.length - 1) {
-          Snackbar.show({ text: SnackBarTypes.POSTED })
+          Snackbar.show({
+            text: SnackBarTypes.POSTED,
+            onClick: () => navigate(`/post/${postId}`),
+          })
         }
       }
     })
