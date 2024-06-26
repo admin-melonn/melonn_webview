@@ -8,11 +8,11 @@ const ParentContent = () => {
   if (parent)
     return (
       <div>
-        <div className='flex flex-row px-2 pt-1 mt-3'>
-          <div className='flex justify-end items-start p-0 pl-2'>
+        <div className='flex flex-row px-2 mt-3'>
+          <div className='flex justify-end items-start p-0 pt-1 pl-2'>
             <img
               src={parent.profileUrl ? parent.profileUrl : '/svg/profile.svg'}
-              className='w-[34px] h-[34px] rounded-full'
+              className='w-[34px] rounded-full'
             />
           </div>
           <div className='w-full ml-2 pb-3'>
@@ -25,7 +25,7 @@ const ParentContent = () => {
               </div>
               <div></div>
             </div>
-            <div className='pb-4 pt-1'>{parent.content}</div>
+            <div className='pb-4 pt-0'>{parent.content}</div>
           </div>
         </div>
       </div>

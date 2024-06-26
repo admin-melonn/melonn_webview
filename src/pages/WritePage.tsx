@@ -18,15 +18,8 @@ import { PERSONAS } from '../utils/prompts'
 import Snackbar from '../components/morecules/SnackBar'
 import { SnackBarTypes } from '../components/morecules/SnackBarUI'
 
-const defaultPrompt1 =
-  'You are a really good friend of mine in the sns. You are male and 27 years old. You are not that kind. But you are funny. Answer me like a comment in SNS. Return in Korean'
-const defaultPrompt2 =
-  'You are a really good friend of mine in the sns. You are male and 27 years old. You are not that kind. But you are funny. Answer me like a comment in SNS. Return in Korean '
-
 interface CreatePostDto {
   content: string
-  prompt1: string
-  prompt2: string
 }
 
 const WritePage = () => {
@@ -42,11 +35,6 @@ const WritePage = () => {
   } = useForm<CreatePostDto>()
   const { parent } = useReplyStore()
 
-  useEffect(() => {
-    setValue('prompt1', defaultPrompt1)
-    setValue('prompt2', defaultPrompt2)
-  }, [])
-
   const postComment = async (dto: CreatePostDto) => {
     if (parent) {
       const recommentId = v4()
@@ -60,10 +48,15 @@ const WritePage = () => {
       }
       const res = await CommentService.InsertComment(commentBody)
 
-      const returnText = await chatComplete(
-        dto.prompt2 ? dto.prompt2 : defaultPrompt2,
-        dto.content
-      )
+      const sysPrompt = PERSONAS.filter((doc) => doc.id == parent.userId)[0]
+        .system
+      const convs = parent.conversation?.map((item) => {
+        return {
+          role: item.commenterType == 'user' ? 'user' : 'assistant',
+          content: item.content,
+        }
+      })
+      const returnText = await chatComplete(sysPrompt, dto.content, convs)
 
       if (returnText) {
         const commentBody2: CommentQueryType = {
@@ -155,7 +148,7 @@ const WritePage = () => {
     <div className='relative h-full'>
       <div className='grid gap-2 grid-flex-row grid-cols-8 border border-b-gray-100 w-full px-4 py-2 h-[44px] justify-center content-center'>
         <div
-          className='col-span-2 text-[14px] content-center'
+          className='test col-span-2 text-[14px] content-center'
           onClick={() => {
             navigate(-1)
           }}
@@ -174,8 +167,8 @@ const WritePage = () => {
       )}
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className='p-2'>
-          <div className='flex flex-row pt-2'>
-            <div className='flex justify-end items-start p-0 pl-2'>
+          <div className='flex flex-row pt-1'>
+            <div className='flex justify-end items-start p-0 pt-1 pl-2'>
               <img
                 src={imgUrl ? imgUrl : '/svg/profile.svg'}
                 className='w-[34px] rounded-full'
@@ -200,52 +193,16 @@ const WritePage = () => {
                       {...field}
                       autoFocus
                       placeholder='please write anything you want'
-                      className='w-full mt-2 text-[16px] focus:outline-none resize-none placeholder:text-gray-300'
+                      className='w-full mt-0 text-[16px] focus:outline-none resize-none placeholder:text-gray-300'
                       minRows={1}
                     />
                   )}
                 />
-                <div className='w-full flex flex-row mt-4'>
-                  <Images strokeWidth={1.5} />
-                  <Camera className='ml-4' strokeWidth={1.5} />
+                <div className='w-full flex flex-row mt-3'>
+                  <Images strokeWidth={1.5} color='#919191' />
+                  <Camera className='ml-4' strokeWidth={1.5} color='#919191' />
                 </div>
               </div>
-              <Controller
-                control={control}
-                name='prompt1'
-                rules={{
-                  required: 'The input is required',
-                }}
-                render={({ field, fieldState }) => (
-                  <TextareaAutosize
-                    {...field}
-                    autoFocus
-                    placeholder='please write anything you want'
-                    defaultValue={defaultPrompt1}
-                    className='w-full mt-12 text-[16px] border focus:outline-none resize-none placeholder:text-gray-300'
-                    minRows={1}
-                  />
-                )}
-              />
-              <p>in _nuaeez_</p>
-              <Controller
-                control={control}
-                name='prompt2'
-                rules={{
-                  required: 'The input is required',
-                }}
-                render={({ field, fieldState }) => (
-                  <TextareaAutosize
-                    {...field}
-                    autoFocus
-                    placeholder='please write anything you want'
-                    defaultValue={defaultPrompt2}
-                    className='w-full mt-8 text-[16px] border focus:outline-none resize-none placeholder:text-gray-300'
-                    minRows={1}
-                  />
-                )}
-              />
-              <p>in mikho__jin</p>
             </div>
           </div>
         </div>

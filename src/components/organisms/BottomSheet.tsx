@@ -6,14 +6,13 @@ import CustomAlert from './CustomAlert'
 type BottomSheetProps = {
   open: boolean
   setOpen: Dispatch<SetStateAction<boolean>>
+  contentId: string
 }
 
-const CustomBottomSheet = ({ open, setOpen }: BottomSheetProps) => {
+const CustomBottomSheet = ({ open, setOpen, contentId }: BottomSheetProps) => {
   const [alertOpen, setAlertOpen] = React.useState(false)
 
-  const onDelete = () => {
-    setAlertOpen(true)
-  }
+  const onDelete = () => {}
   const onReport = () => {}
 
   return (

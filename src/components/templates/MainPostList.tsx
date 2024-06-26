@@ -7,13 +7,15 @@ type MainPostListProps = {
 }
 
 const MainPostList = ({ posts }: MainPostListProps) => {
+  console.log('보스트 ', posts)
   return (
     <div>
-      {posts?.map((post) => {
-        return <PostDisplay key={post.postId} post={post} />
-      })}
+      {posts &&
+        posts.map((post) => {
+          return <PostDisplay key={post.postId} post={post} />
+        })}
     </div>
   )
 }
 
-export default MainPostList
+export default React.memo(MainPostList)

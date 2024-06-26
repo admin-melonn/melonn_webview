@@ -7,6 +7,10 @@ type parentInfo = {
   createdAt: string
   postId: string
   userId: string
+  conversation?: {
+    commenterType: 'user' | 'assistant'
+    content: string
+  }[]
 }
 
 export type ReplyState = {

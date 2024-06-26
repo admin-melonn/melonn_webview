@@ -3,17 +3,23 @@ import { ContentProps } from './ContentBottomBar'
 import { timeAgo } from '../../utils/formatDate'
 import CustomBottomSheet from '../organisms/BottomSheet'
 
-const ContentNameBar = ({ content }: ContentProps) => {
+type ContentNameBarProps = {
+  name?: string
+  createdAt?: string
+  id?: string
+}
+
+const ContentNameBar = ({ name, createdAt, id }: ContentNameBarProps) => {
   const [open, setOpen] = useState(false)
 
   const ago = useMemo(() => {
-    return timeAgo(content.createdAt)
-  }, [content.createdAt])
+    if (createdAt) return timeAgo(createdAt)
+  }, [createdAt])
 
   return (
     <div className='flex flex-row justify-between items-center'>
       <div className='flex flex-row'>
-        <div className='font-semibold'>{content.user?.name}</div>
+        <div className='font-semibold'>{name}</div>
         <div className='text-slate-400 ml-2'>{ago}</div>
       </div>
       <div>
@@ -23,7 +29,7 @@ const ContentNameBar = ({ content }: ContentProps) => {
           className='w-[22px] rounded-full'
         />
       </div>
-      <CustomBottomSheet open={open} setOpen={setOpen} />
+      {id && <CustomBottomSheet open={open} setOpen={setOpen} contentId={id} />}
     </div>
   )
 }
