@@ -14,6 +14,9 @@ import { CommentService } from '../services/comment-service'
 import ParentContent from '../components/morecules/ParentContent'
 import { useReplyStore } from '../store/useReplyStore'
 import { Camera, Images } from 'lucide-react'
+import { PERSONAS } from '../utils/prompts'
+import Snackbar from '../components/morecules/SnackBar'
+import { SnackBarTypes } from '../components/morecules/SnackBarUI'
 
 const defaultPrompt1 =
   'You are a really good friend of mine in the sns. You are male and 27 years old. You are not that kind. But you are funny. Answer me like a comment in SNS. Return in Korean'
@@ -102,36 +105,40 @@ const WritePage = () => {
     }
     const res = await PostService.InsertPost(body)
 
-    const returnText = await chatComplete(
-      dto.prompt1 ? dto.prompt1 : defaultPrompt1,
-      dto.content
-    )
+    PERSONAS.forEach(async (doc, index) => {
+      console.log('Commenting... ', doc.id)
+      const returnText = await chatComplete(doc.system, doc.user + dto.content)
 
-    if (returnText) {
-      const commentBody: CommentQueryType = {
-        commentId: v4(),
-        postId: postId,
-        content: returnText,
-        userId: 'c4f5a73d-5a7c-4b2a-b3c0-5b48c64031ee',
-        createdBy: 'ai',
+      if (returnText) {
+        let commentText = returnText
+
+        if (
+          returnText.toLowerCase().includes('comment: ') ||
+          returnText.toLowerCase().includes('comment : ')
+        ) {
+          const commentIndex = returnText.toLowerCase().indexOf('comment')
+          commentText = returnText
+            .substring(commentIndex + 'comment: '.length)
+            .trim()
+        }
+
+        const commentBody: CommentQueryType = {
+          commentId: v4(),
+          postId: postId,
+          content: commentText,
+          userId: doc.id,
+          createdBy: 'ai',
+        }
+        const res = await CommentService.InsertComment(commentBody)
+
+        // 배열의 마지막 요소인지 확인
+        if (index === PERSONAS.length - 1) {
+          Snackbar.show({ text: SnackBarTypes.POSTED })
+        }
       }
-      const res = await CommentService.InsertComment(commentBody)
-    }
+    })
 
-    const returnText2 = await chatComplete(dto.prompt1, dto.content)
-
-    console.log(returnText2)
-    if (returnText2) {
-      const commentBody: CommentQueryType = {
-        commentId: v4(),
-        postId: postId,
-        content: returnText2,
-        userId: 'f6e66503-c0dd-48e4-bf1b-d985e0c7f68d',
-        createdBy: 'ai',
-      }
-      const res = await CommentService.InsertComment(commentBody)
-    }
-
+    Snackbar.show({ text: SnackBarTypes.POSTING })
     if (!res) {
       reset({
         content: '',
