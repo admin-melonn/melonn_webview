@@ -1,6 +1,13 @@
 // import AppLayout from "@/components/templates/AppLayout";
 // import SnapshotListPage from "@/pages/snapshots/SnapshotListPage";
-import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
+import {
+  BrowserRouter,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+  useNavigationType,
+} from 'react-router-dom'
 // import AuthLayout from "./components/templates/AuthLayout";
 // import SessionLayout from "./components/templates/SessionLayout";
 import SignInPage from './pages/SignInPage'
@@ -22,6 +29,9 @@ export default function Router() {
 
   return (
     <Routes key={location.pathname} location={location}>
+      {/* <Route path='/A' element={<A />} />
+          <Route path='/B' element={<B />} />
+          <Route path='/C' element={<C />} /> */}
       <Route element={<SessionLayout />}>
         <Route element={<OuterLayout />}>
           <Route path='/' element={<HomePage />} />
@@ -47,5 +57,33 @@ export default function Router() {
       </Route> */}
       </Route>
     </Routes>
+  )
+}
+
+const A = () => {
+  const navigate = useNavigate()
+
+  return (
+    <div className='80vw 80vh flex justify-center items-center bg-red-500'>
+      A<div onClick={() => navigate('/B')}>B</div>
+    </div>
+  )
+}
+const B = () => {
+  const navigate = useNavigate()
+
+  return (
+    <div className='80vw 80vh flex justify-center items-center bg-green-500'>
+      B<div onClick={() => navigate('/C')}>B</div>
+    </div>
+  )
+}
+const C = () => {
+  const navigate = useNavigate()
+
+  return (
+    <div className='80vw 80vh flex justify-center items-center bg-blue-500'>
+      C <div onClick={() => navigate('/A')}>C</div>
+    </div>
   )
 }

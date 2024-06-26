@@ -1,20 +1,22 @@
 import { PostDisplayType } from '@/src/services/post-service/types'
-import { timeAgo } from '../../utils/formatDate'
-import React, { useMemo, useState } from 'react'
-import {
-  CommentDisplayType,
-  CommentType,
-} from '@/src/services/comment-service/types'
+import React from 'react'
+import { CommentDisplayType } from '@/src/services/comment-service/types'
 import ContentBottomBar from './ContentBottomBar'
 import ContentNameBar from './ContentNameBar'
 
 type ContentProps = {
-  content: PostDisplayType | CommentDisplayType
+  content: Partial<PostDisplayType> & Partial<CommentDisplayType>
   isLine: boolean | undefined
   isMain?: boolean
+  types: 'post' | 'comment'
 }
 
-const ContentDisplay = ({ content, isLine, isMain = false }: ContentProps) => {
+const ContentDisplay = ({
+  types,
+  content,
+  isLine,
+  isMain = false,
+}: ContentProps) => {
   if (!isMain) {
     return (
       <div className='flex flex-row px-3 pt-1 text-[15px]'>
@@ -32,8 +34,12 @@ const ContentDisplay = ({ content, isLine, isMain = false }: ContentProps) => {
           )}
         </div>
         <div className='w-[90%] pl-2 pb-3'>
-          <ContentNameBar content={content} />
-          <div className='pb-2 pt-1'>{content.content}</div>
+          <ContentNameBar
+            name={content.user?.name}
+            id={types == 'post' ? content.postId : content.commentId}
+            createdAt={content.createdAt}
+          />
+          <div className='pb-2 pt-0'>{content.content}</div>
           <ContentBottomBar content={content} />
         </div>
       </div>
@@ -56,7 +62,11 @@ const ContentDisplay = ({ content, isLine, isMain = false }: ContentProps) => {
             )}
           </div>
           <div className='w-[90%] pl-2'>
-            <ContentNameBar content={content} />
+            <ContentNameBar
+              name={content.user?.name}
+              id={types == 'post' ? content.postId : content.commentId}
+              createdAt={content.createdAt}
+            />
           </div>
         </div>
         <div className='pb-2 pt-2'>{content.content}</div>

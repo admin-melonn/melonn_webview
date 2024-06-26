@@ -21,6 +21,7 @@ const PostDisplay = ({ post }: PostDisplayProps) => {
         className={`border-t-[0.5px] border-t-slate-300 pt-3`}
       >
         <ContentDisplay
+          types='comment'
           content={post}
           isLine={post.comments && post.comments.length > 0}
         />

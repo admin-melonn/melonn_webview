@@ -73,10 +73,15 @@ const DetailPage = () => {
   }, [id])
 
   const reply = (comment: CommentDisplayType) => {
-    const conversation = [
+    if (!content) return
+
+    const conversation: {
+      commenterType: 'user' | 'assistant'
+      content: string
+    }[] = [
       {
         commenterType: 'user',
-        content: content?.content,
+        content: content.content,
       },
     ]
     let cmts = [comment]
@@ -91,11 +96,11 @@ const DetailPage = () => {
         cmts.push(cmt.comments[0])
       }
       conversation.push({
-        commenterType: cmt.createdBy,
+        commenterType: cmt.createdBy == 'user' ? 'user' : 'assistant',
         content: cmt.content,
       })
+      console.log('복ㄷ ', cmt)
       c += 1
-      console.log('찾기')
     }
     console.log('대화 : ', conversation)
 
@@ -106,6 +111,7 @@ const DetailPage = () => {
       createdAt: comment.createdAt,
       postId: comment.postId,
       userId: comment.userId,
+      conversation: conversation,
     })
     navigate(`/write/${comment?.commentId}`)
   }
@@ -134,9 +140,16 @@ const DetailPage = () => {
             <div className='col-span-1 justify-end content-end flex'></div>
           </div>
           <div className='pt-2'>
-            {<ContentDisplay content={content} isLine={false} isMain={true} />}
+            {
+              <ContentDisplay
+                types='comment'
+                content={content}
+                isLine={false}
+                isMain={true}
+              />
+            }
           </div>
-          <div className='px-4 py-2 mt-4 mb-0 border-y border-gray-200'>
+          <div className='px-4 py-2 mt-4 mb-0 border-y border-gray-200/60'>
             <div className='font-semibold text-[14px]'>Comments</div>
           </div>
           <div>
@@ -146,7 +159,7 @@ const DetailPage = () => {
                   return (
                     <div
                       key={comment.commentId}
-                      className='border-b border-gray-200 pt-2 pb-1'
+                      className='border-b border-gray-200/60 pt-2 pb-1'
                     >
                       <CommentDisplay
                         comment={comment}

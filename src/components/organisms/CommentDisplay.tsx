@@ -10,7 +10,7 @@ type CommentDisplayProps = {
 const CommentDisplay = ({ comment, isLine }: CommentDisplayProps) => {
   return (
     <div>
-      <ContentDisplay content={comment} isLine={isLine} />
+      <ContentDisplay content={comment} isLine={isLine} types='comment' />
       {comment.comments?.map((reply) => {
         return (
           <div key={reply.commentId}>
