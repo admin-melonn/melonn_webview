@@ -4,6 +4,7 @@ import React, { useEffect } from 'react'
 import '@radix-ui/themes/styles.css'
 import { Theme } from '@radix-ui/themes'
 import { QueryClient, QueryClientProvider } from 'react-query' //📍추가
+import Snackbar from './components/morecules/SnackBar'
 
 const queryClient = new QueryClient()
 
@@ -16,6 +17,7 @@ function App() {
             <Router />
           </BrowserRouter>
         </Theme>
+        <Snackbar />
         {/* <ReactQueryDevtools /> */}
       </QueryClientProvider>
     </>
