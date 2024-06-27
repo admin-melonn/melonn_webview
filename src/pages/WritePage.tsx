@@ -9,7 +9,10 @@ import { PostQueryType } from '../services/post-service/types'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Controller, useForm } from 'react-hook-form'
 import { chatComplete, openai } from '../services/agent'
-import { CommentQueryType } from '../services/comment-service/types'
+import {
+  CommentDisplayType,
+  CommentQueryType,
+} from '../services/comment-service/types'
 import { CommentService } from '../services/comment-service'
 import ParentContent from '../components/morecules/ParentContent'
 import { useReplyStore } from '../store/useReplyStore'
@@ -17,6 +20,8 @@ import { Camera, Images } from 'lucide-react'
 import { PERSONAS } from '../utils/prompts'
 import Snackbar from '../components/morecules/SnackBar'
 import { SnackBarTypes } from '../components/morecules/SnackBarUI'
+import { usePostStore } from '../store/usePostStore'
+import { returnNestedComments } from './DetailPage'
 
 interface CreatePostDto {
   content: string
@@ -34,17 +39,20 @@ const WritePage = () => {
     formState: { isSubmitting },
   } = useForm<CreatePostDto>()
   const { parent } = useReplyStore()
+  const { content, setContent } = usePostStore()
 
   const postComment = async (dto: CreatePostDto) => {
     if (parent) {
       const recommentId = v4()
-      const commentBody: CommentQueryType = {
+      const commentBody: CommentDisplayType = {
         commentId: recommentId,
         postId: parent.postId,
         content: dto.content,
         userId: userId,
         parentCommentId: parentId,
         createdBy: 'user',
+        createdAt: new Date().toISOString(),
+        likesCount: 0,
       }
       const res = await CommentService.InsertComment(commentBody)
 
@@ -59,16 +67,59 @@ const WritePage = () => {
       const returnText = await chatComplete(sysPrompt, dto.content, convs)
 
       if (returnText) {
-        const commentBody2: CommentQueryType = {
+        const commentBody2: CommentDisplayType = {
           commentId: v4(),
           postId: parent.postId,
           content: returnText,
           userId: parent.userId,
           parentCommentId: recommentId,
           createdBy: 'ai',
+          createdAt: new Date().toISOString(),
+          likesCount: 0,
         }
         const res2 = await CommentService.InsertComment(commentBody2)
-        console.log('댓글에 답글', res2)
+
+        if (!res2 && content && content.comments) {
+          const DFS = (cmts: CommentDisplayType): CommentDisplayType => {
+            if (cmts.comments && cmts.comments.length > 0) {
+              return {
+                ...cmts,
+                comments: [DFS(cmts.comments[0])],
+              }
+            } else {
+              if (cmts.commentId == parentId && cmts.user)
+                return {
+                  ...cmts,
+                  comments: [
+                    {
+                      ...commentBody,
+                      user: content.user,
+                      comments: [
+                        {
+                          ...commentBody2,
+                          user: {
+                            ...cmts.user,
+                          },
+                          comments: [],
+                        },
+                      ],
+                    },
+                  ],
+                }
+              return cmts
+            }
+          }
+          console.log('테스트  ', content.comments && DFS(content.comments[1]))
+
+          const totalComments = content.comments.map((doc) => {
+            return DFS(doc)
+          })
+
+          setContent({
+            ...content,
+            comments: totalComments,
+          })
+        }
       }
 
       return
@@ -76,7 +127,6 @@ const WritePage = () => {
   }
 
   const onSubmit = async (dto: CreatePostDto) => {
-    console.log('보기 ', dto)
     if (!dto.content) {
       alert('You should write something to post')
     }
