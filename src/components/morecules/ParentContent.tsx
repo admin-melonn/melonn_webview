@@ -1,4 +1,4 @@
-import { useReplyStore } from '../..//store/useReplyStore'
+import { useReplyStore } from '../../store/useReplyStore'
 import { timeAgo } from '../../utils/formatDate'
 import React from 'react'
 
@@ -25,7 +25,7 @@ const ParentContent = () => {
               </div>
               <div></div>
             </div>
-            <div className='pb-4 pt-0'>{parent.content}</div>
+            <div className='pb-1 pt-0'>{parent.content}</div>
           </div>
         </div>
       </div>

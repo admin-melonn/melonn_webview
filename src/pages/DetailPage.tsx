@@ -8,32 +8,34 @@ import CommentDisplay from '../components/organisms/CommentDisplay'
 import { useReplyStore } from '../store/useReplyStore'
 import { CommentDisplayType } from '../services/comment-service/types'
 import CustomAlert from '../components/organisms/CustomAlert'
+import { usePostStore } from '../store/usePostStore'
+
+export const returnNestedComments = (
+  replies: CommentDisplayType[],
+  parentCommentId: string
+) => {
+  const comment = replies.find(
+    (reply) => reply.parentCommentId == parentCommentId
+  )
+
+  if (comment) {
+    const findNested = returnNestedComments(replies, comment.commentId)
+    if (findNested) {
+      comment.comments = findNested
+    }
+    return [comment]
+  } else {
+    return false
+  }
+}
 
 const DetailPage = () => {
   const { id = '' } = useParams()
   const navigate = useNavigate()
   const { imgUrl } = useUserStore()
-  const [content, setContent] = useState<PostDisplayType | null>(null)
+  const { content, setContent } = usePostStore()
+  const [isLoading, setIsLoading] = useState(false)
   const { setParent } = useReplyStore()
-
-  const returnNestedComments = (
-    replies: CommentDisplayType[],
-    parentCommentId: string
-  ) => {
-    const comment = replies.find(
-      (reply) => reply.parentCommentId == parentCommentId
-    )
-
-    if (comment) {
-      const findNested = returnNestedComments(replies, comment.commentId)
-      if (findNested) {
-        comment.comments = findNested
-      }
-      return [comment]
-    } else {
-      return false
-    }
-  }
 
   const getPost = async () => {
     const res = await PostService.GetPost('postId', id)
@@ -66,9 +68,11 @@ const DetailPage = () => {
         comments: totalComments,
       })
     }
+    setIsLoading(false)
   }
 
   useEffect(() => {
+    setIsLoading(true)
     getPost()
   }, [id])
 
@@ -85,12 +89,14 @@ const DetailPage = () => {
       },
     ]
     let cmts = [comment]
+    let lastComment: CommentDisplayType = { ...comment }
     let c = 0
-    while (cmts && c < 10) {
+    while (cmts && c < 30) {
       let cmt = cmts.pop()
       if (!cmt) {
         break
       }
+      lastComment = { ...cmt }
 
       if (cmt.comments) {
         cmts.push(cmt.comments[0])
@@ -99,28 +105,27 @@ const DetailPage = () => {
         commenterType: cmt.createdBy == 'user' ? 'user' : 'assistant',
         content: cmt.content,
       })
-      console.log('복ㄷ ', cmt)
       c += 1
     }
-    console.log('대화 : ', conversation)
+    console.log('cmt 보기 : ', lastComment)
 
     setParent({
-      profileUrl: comment.user ? comment.user.profileImageUrl : '',
-      name: comment.user ? comment.user.name : '',
-      content: comment.content,
-      createdAt: comment.createdAt,
-      postId: comment.postId,
-      userId: comment.userId,
+      profileUrl: lastComment.user ? lastComment.user.profileImageUrl : '',
+      name: lastComment.user ? lastComment.user.name : '',
+      content: lastComment.content,
+      createdAt: lastComment.createdAt,
+      postId: lastComment.postId,
+      userId: lastComment.userId,
       conversation: conversation,
     })
-    navigate(`/write/${comment?.commentId}`)
+    navigate(`/write/${lastComment?.commentId}`)
   }
   const [alertOpen, setAlertOpen] = React.useState(false)
 
   return (
     <div>
-      <CustomAlert open={alertOpen} setOpen={setAlertOpen} onClick={() => {}} />
-      {content && (
+      {/* <CustomAlert open={alertOpen} setOpen={setAlertOpen} onClick={() => {}} /> */}
+      {content && !isLoading && (
         <>
           <div className='grid gap-2 grid-flex-row grid-cols-6 border border-b-gray-100 w-full p-3 h-[44px] justify-between content-center'>
             <div
